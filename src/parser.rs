@@ -2,7 +2,7 @@ use pulldown_cmark::{Event, Parser, Tag};
 use std::mem;
 
 #[derive(Debug)]
-enum MdElement {
+pub enum MdElement {
     Paragraph(String),
     Heading { level: u32, content: String },
     CodeBlock(String),
@@ -17,7 +17,7 @@ enum BufferState {
 
 #[derive(Debug)]
 pub struct ParsedContent {
-    content: Vec<MdElement>,
+    pub content: Vec<MdElement>,
 }
 
 impl ParsedContent {
