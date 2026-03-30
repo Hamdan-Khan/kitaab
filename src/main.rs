@@ -2,8 +2,8 @@ mod markdown_elements;
 mod parser;
 mod utils;
 use iced::{
-    Application, Command, Element, Length, Settings, Theme, alignment, executor,
-    widget::{button, column, row, text},
+    Application, Command, Element, Length, Settings, Theme, alignment, executor, theme,
+    widget::{button, column, row, scrollable, text},
 };
 
 fn main() -> iced::Result {
@@ -62,17 +62,25 @@ impl Application for Kitaab {
     fn view(&self) -> Element<'_, Message> {
         let content = &self.content.content;
 
+        let prev = button(text("<"))
+            .on_press(Message::Previous)
+            .style(theme::Button::Text);
+
+        let next = button(text(">"))
+            .on_press(Message::Next)
+            .style(theme::Button::Text);
+
         column![
             text("Welcome to Kitaab!")
                 .width(Length::Fill)
                 .horizontal_alignment(alignment::Horizontal::Center),
-            markdown_elements::render_md(content),
+            scrollable(markdown_elements::render_md(content)).height(Length::Fill),
             row![
-                button("Previous").on_press(Message::Previous),
+                prev,
                 text(format!("Page: {}", self.counter))
                     .width(Length::Fill)
                     .horizontal_alignment(alignment::Horizontal::Center),
-                button("Next").on_press(Message::Next),
+                next,
             ]
             .width(Length::Fill)
             .align_items(iced::Alignment::Center),
