@@ -1,4 +1,6 @@
+mod book;
 mod markdown_elements;
+mod page_loader;
 mod parser;
 mod utils;
 use iced::{
