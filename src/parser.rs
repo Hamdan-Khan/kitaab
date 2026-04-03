@@ -25,7 +25,7 @@ impl ParsedContent {
         let mut state: BufferState = BufferState::Idle;
         let mut parsed: Vec<MdElement> = vec![];
 
-        ParsedContent::debug_parsed(&content);
+        // ParsedContent::debug_parsed(&content);
 
         for event in Parser::new(&content) {
             match event {

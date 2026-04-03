@@ -9,6 +9,12 @@ pub struct FsPageLoader {
     base_path: String,
 }
 
+impl FsPageLoader {
+    pub fn new(base_path: String) -> Self {
+        Self { base_path }
+    }
+}
+
 impl PageLoader for FsPageLoader {
     fn load_page(&self, index: u32) -> Option<String> {
         let path = format!("{}/{}.md", self.base_path, index);

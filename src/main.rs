@@ -2,19 +2,20 @@ mod book;
 mod markdown_elements;
 mod page_loader;
 mod parser;
-mod utils;
 use iced::{
     Application, Command, Element, Length, Settings, Theme, alignment, executor, theme,
     widget::{button, column, row, scrollable, text},
 };
+
+use crate::{book::Book, page_loader::FsPageLoader, parser::ParsedContent};
 
 fn main() -> iced::Result {
     Kitaab::run(Settings::default())
 }
 
 struct Kitaab {
-    counter: u32,
     content: parser::ParsedContent,
+    book: Book<FsPageLoader>,
 }
 
 #[derive(Debug, Clone)]
@@ -31,12 +32,25 @@ impl Application for Kitaab {
     type Flags = ();
 
     fn new(_flags: ()) -> (Self, Command<Message>) {
-        let md = utils::read_md("content/kitaab.md");
-        let content = parser::ParsedContent::parse_md(md);
+        let path = String::from("content");
+        let loader = FsPageLoader::new(path);
+        let book_handler = Book::new(loader);
+        let content = match book_handler.load_page() {
+            Some(c) => c,
+            None => {
+                eprintln!(
+                    "Error parsing content for page {}",
+                    book_handler.get_current()
+                );
+                // todo: replace with a proper message like "Not found" or something,
+                // maybe should handle this inside book handler
+                ParsedContent { content: vec![] }
+            }
+        };
         (
             Self {
-                counter: 0,
                 content,
+                book: book_handler,
             },
             Command::none(),
         )
@@ -49,14 +63,16 @@ impl Application for Kitaab {
     fn update(&mut self, message: Message) -> Command<Message> {
         match message {
             Message::Next => {
-                self.counter += 1;
-            }
-            Message::Previous => {
-                if self.counter > 0 {
-                    self.counter -= 1;
+                if let Some(content) = self.book.next_page() {
+                    self.content = content;
                 }
             }
-            _ => {}
+            Message::Previous => {
+                if let Some(content) = self.book.prev_page() {
+                    self.content = content;
+                }
+            }
+            Message::Noop => {}
         }
         Command::none()
     }
@@ -79,7 +95,7 @@ impl Application for Kitaab {
             scrollable(markdown_elements::render_md(content)).height(Length::Fill),
             row![
                 prev,
-                text(format!("Page: {}", self.counter))
+                text(format!("Page: {}", self.book.get_current()))
                     .width(Length::Fill)
                     .horizontal_alignment(alignment::Horizontal::Center),
                 next,
