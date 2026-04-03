@@ -95,9 +95,13 @@ impl Application for Kitaab {
             scrollable(markdown_elements::render_md(content)).height(Length::Fill),
             row![
                 prev,
-                text(format!("Page: {}", self.book.get_current()))
-                    .width(Length::Fill)
-                    .horizontal_alignment(alignment::Horizontal::Center),
+                text(format!(
+                    "Page: {}/{}",
+                    self.book.get_current() + 1,
+                    self.book.get_total_pages()
+                ))
+                .width(Length::Fill)
+                .horizontal_alignment(alignment::Horizontal::Center),
                 next,
             ]
             .width(Length::Fill)

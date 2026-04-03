@@ -81,6 +81,7 @@ impl ParsedContent {
         Self { content: parsed }
     }
 
+    #[allow(dead_code)]
     fn debug_parsed(content: &String) {
         for event in Parser::new(&content) {
             match &event {

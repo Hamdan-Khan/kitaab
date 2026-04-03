@@ -14,7 +14,9 @@ impl<L: PageLoader> Book<L> {
     }
 
     pub fn next_page(&mut self) -> Option<ParsedContent> {
-        self.current += 1;
+        if self.current < self.get_total_pages() - 1 {
+            self.current += 1;
+        }
         self.load_page()
     }
 
@@ -33,5 +35,12 @@ impl<L: PageLoader> Book<L> {
 
     pub fn get_current(&self) -> u32 {
         self.current
+    }
+
+    pub fn get_total_pages(&self) -> u32 {
+        match self.loader.total_pages() {
+            Some(p) => p,
+            None => 0,
+        }
     }
 }
